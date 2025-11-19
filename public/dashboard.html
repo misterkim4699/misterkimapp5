@@ -1,0 +1,108 @@
+6.	<!DOCTYPE html>
+7.	<html lang="fr">
+8.	<head>
+9.	  <meta charset="UTF-8">
+10.	  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+11.	  <title>Dashboard - Monsieur Kim2</title>
+12.	  <link rel="stylesheet" href="dashboard.css">
+13.	</head>
+14.	<body>
+15.	
+16.	  <!-- SIDEBAR -->
+17.	  <aside class="sidebar">
+18.	    <div class="sidebar-header">
+19.	      <img src="./images/bestoff2.png" alt="Logo" class="sidebar-logo">
+20.	      <div class="brand-text">
+21.	        <h2>Monsieur Kim2</h2>
+22.	        <p>De l'idée au livre</p>
+23.	      </div>
+24.	    </div>
+25.	    <nav class="sidebar-nav">
+26.	      <a href="#" class="active">📘 Tableau de bord</a>
+27.	      <a href="#">✏️ Nouveau Projet</a>
+28.	      <a href="#">📚 Templates</a>
+29.	      <a href="#">🎯 Objectifs</a>
+30.	      <a href="#">👤 Profil</a>
+31.	      <a href="#" id="logout-btn">Déconnexion</a>
+32.	    </nav>
+33.	  </aside>
+34.	
+35.	  <!-- MAIN -->
+36.	  <main class="main">
+37.	    <!-- HEADER -->
+38.	    <header class="main-header">
+39.	      <div class="header-text">
+40.	        <h1>Bonjour, Mohamed</h1>
+41.	        <p>Prêt à transformer vos idées en chef-d'œuvre ?</p>
+42.	        <p id="dailyGoalMessage">✏️ Objectif quotidien : 500 mots</p>
+43.	      </div>
+44.	      <div class="header-img">
+45.	        <img src="./images/bestofapp.png" alt="Illustration header">
+46.	      </div>
+47.	    </header>
+48.	
+49.	    <!-- STATS -->
+50.	    <section class="stats">
+51.	      <div class="stat-card blue">
+52.	        <h3>Projets en cours</h3>
+53.	        <h2 id="statProjects">0</h2>
+54.	      </div>
+55.	      <div class="stat-card orange">
+56.	        <h3>Mots écrits</h3>
+57.	        <h2 id="statWords">0</h2>
+58.	      </div>
+59.	      <div class="stat-card green">
+60.	        <h3>Objectif du jour</h3>
+61.	        <h2 id="statGoal">500</h2>
+62.	      </div>
+63.	      <div class="stat-card purple">
+64.	        <h3>Succès</h3>
+65.	        <h2 id="statSuccess">0</h2>
+66.	      </div>
+67.	    </section>
+68.	
+69.	    <!-- PROJETS -->
+70.	    <section class="projects">
+71.	      <div class="projects-header">
+72.	        <h2>Mes projets</h2>
+73.	        <button id="newProjectBtn" class="btn primary">+ Nouveau projet</button>
+74.	      </div>
+75.	
+76.	      <div class="projects-grid" id="projectsGrid">
+77.	        <!-- Cartes injectées par JS -->
+78.	      </div>
+79.	
+80.	      <!-- PROJET ACTIF -->
+81.	      <div class="active-project" id="activeProjectContainer" style="display:none;">
+82.	        <h2 id="activeTitle">Projet sélectionné</h2>
+83.	        <textarea id="activeDescription" placeholder="Écrivez ici votre histoire..."></textarea>
+84.	        <div class="active-actions">
+85.	          <button id="saveProject" class="btn primary">Enregistrer</button>
+86.	          <button id="aiProject" class="btn">Améliorer avec IA</button>
+87.	          <button id="deleteProject" class="btn ghost">Supprimer</button>
+88.	        </div>
+89.	      </div>
+90.	
+91.	      <!-- FORMULAIRE NOUVEAU PROJET -->
+92.	      <div class="new-project-form" id="newProjectForm" style="display:none;">
+93.	        <h2>Créer un projet</h2>
+94.	        <form id="projectForm">
+95.	          <input type="text" id="title" placeholder="Titre du projet" required>
+96.	          <textarea id="description" placeholder="Commencez votre histoire..."></textarea>
+97.	          <select id="style">
+98.	            <option value="Fantasy">Fantasy</option>
+99.	            <option value="Thriller">Thriller</option>
+100.	            <option value="Science Fiction">Science Fiction</option>
+101.	            <option value="Romance">Romance</option>
+102.	          </select>
+103.	          <button type="submit" class="btn primary">Créer le projet</button>
+104.	          <button type="button" id="cancelNewProject" class="btn ghost">Annuler</button>
+105.	        </form>
+106.	      </div>
+107.	
+108.	    </section>
+109.	  </main>
+110.	
+111.	  <script src="dashboard.js"></script>
+112.	</body>
+113.	</html

@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Connexion — MisterKimApp</title>
+  <link rel="stylesheet" href="style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="auth-page">
+    <div class="auth-image">
+      <img src="./images/bestoff.png" alt="Illustration">
+    </div>
+    <div class="auth-form-container">
+      <div class="auth-form-card">
+        <h1>Connexion</h1>
+        <p>Accédez à votre compte MisterKimApp</p>
+        <form id="loginForm">
+          <div class="form-group">
+            <label for="email">Email</label>
+            <input type="email" id="email" required placeholder="exemple@mail.com">
+          </div>
+          <div class="form-group">
+            <label for="password">Mot de passe</label>
+            <input type="password" id="password" required placeholder="••••••••">
+          </div>
+          <div id="login-msg" class="form-msg"></div>
+          <button type="submit" class="btn primary large">Se connecter</button>
+        </form>
+       <div class="auth-footer">
+  <p>
+    Pas encore de compte ? <a href="register.html">Créer un compte</a>
+  </p>
+  <p>
+    <a href="index.html">⬅ Retour à l'accueil</a>
+  </p>
+</div>
+    </div>
+  </div>
+  <script src="main.js"></script>
+</body>
+</html>

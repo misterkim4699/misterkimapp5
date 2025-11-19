@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Créer un compte — MisterKimApp</title>
+  <link rel="stylesheet" href="style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+    rel="stylesheet">
+</head>
+
+<body>
+  <div class="auth-page">
+    <div class="auth-image">
+      <img src="./images/bestoff.png" alt="Illustration">
+    </div>
+    <div class="auth-form-container">
+      <div class="auth-form-card">
+        <h1>Créer un compte</h1>
+        <p>Rejoignez MisterKimApp et commencez gratuitement</p>
+        <form id="registerForm">
+          <div class="form-group">
+            <label for="prenom">Prénom</label>
+            <input type="text" id="prenom" required placeholder="Prénom">
+          </div>
+          <div class="form-group">
+            <label for="nom">Nom</label>
+            <input type="text" id="nom" required placeholder="Nom">
+          </div>
+          <div class="form-group">
+            <label for="username">Nom d'utilisateur</label>
+            <input type="text" id="username" required placeholder="Nom d'utilisateur">
+          </div>
+          <div class="form-group">
+            <label for="email">Email</label>
+            <input type="email" id="email" required placeholder="exemple@mail.com">
+          </div>
+          <div class="form-group">
+            <label for="password">Mot de passe</label>
+            <input type="password" id="password" required placeholder="••••••••">
+          </div>
+          <div id="register-msg" class="form-msg"></div>
+          <button type="submit" class="btn primary large">S'inscrire</button>
+        </form>
+        <div class="auth-footer">
+          <p>
+            Déjà inscrit ? <a href="login.html">Se connecter</a>
+          </p>
+          <p>
+            <a href="index.html">⬅ Retour à l'accueil</a>
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script src="main.js"></script>
+</body>
+
+</html>

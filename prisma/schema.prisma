@@ -1,0 +1,75 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+/**
+ * ========================
+ * MODEL PROJECT
+ * =========================
+ */
+model Project {
+  id          Int      @id @default(autoincrement())
+  title       String   @db.VarChar(100)
+  description String?  @db.VarChar(1000)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  userId      Int
+  user        User     @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+}
+
+/**
+ * ========================
+ * MODEL USER
+ * =========================
+ */
+model User {
+  id        Int      @id @default(autoincrement())
+  username  String   @unique @db.VarChar(50)
+  email     String   @unique @db.VarChar(100)
+  password  String   @db.VarChar(255)
+  name      String   @db.VarChar(100)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  isActive  Boolean  @default(true)
+
+  projects        Project[]
+  activationToken ActivationToken?
+  resetToken      ResetPasswordToken?
+}
+
+/**
+ * ========================
+ * MODEL ACTIVATION TOKEN
+ * =========================
+ */
+model ActivationToken {
+  id        Int      @id @default(autoincrement())
+  token     String   @unique
+  userId    Int      @unique
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+/**
+ * ========================
+ * MODEL RESET PASSWORD TOKEN
+ * =========================
+ */
+model ResetPasswordToken {
+  id        Int      @id @default(autoincrement())
+  token     String   @unique
+  userId    Int      @unique // <-- Correction ici
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+
