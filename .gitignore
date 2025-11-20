@@ -3,3 +3,10 @@ node_modules
 .env
 
 /generated/prisma
+# Dossiers et fichiers à ignorer
+node_modules/
+.env
+.DS_Store
+*.log
+dist/
+build/

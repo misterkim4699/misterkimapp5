@@ -1,127 +1,104 @@
-const apiBase = "http://localhost:5000/api";
-const DAILY_WORD_GOAL = 500;
+// LocalStorage Projects
+function getProjects(){return JSON.parse(localStorage.getItem('projects')||'[]');}
+function saveProjects(p){localStorage.setItem('projects',JSON.stringify(p));}
+function generateId(){return '_' + Math.random().toString(36).substr(2,9);}
 
-let projets = [];
-let projetActif = null;
-
-const projectsGrid = document.getElementById("projectsGrid");
-const activeProjectContainer = document.getElementById(
-  "activeProjectContainer"
-);
-const activeTitle = document.getElementById("activeTitle");
-const activeDescription = document.getElementById("activeDescription");
-
-// ----------------- Load Projects -----------------
-async function loadProjects() {
-  const res = await fetch(`${apiBase}/project`, { credentials: "include" });
-  projets = res.ok ? await res.json() : [];
-
-  projectsGrid.innerHTML = "";
-  projets.forEach((p) => {
-    const card = document.createElement("div");
-    card.className = "project-card";
-    card.innerHTML = `
-      <h3>${p.title}</h3>
-      <p>${p.description?.substring(0, 80) || ""}...</p>
-      <div class="project-actions">
-        <button class="edit-btn" data-id="${p.id}">✏️</button>
-        <button class="delete-btn" data-id="${p.id}">🗑️</button>
-      </div>
-    `;
-    projectsGrid.appendChild(card);
-  });
-
-  document
-    .querySelectorAll(".edit-btn")
-    .forEach((btn) =>
-      btn.addEventListener("click", () => selectProject(btn.dataset.id))
-    );
-  document
-    .querySelectorAll(".delete-btn")
-    .forEach((btn) =>
-      btn.addEventListener("click", () => deleteProject(btn.dataset.id))
-    );
-  updateStats();
+// Render projects
+function renderProjects(){
+    const grid=document.querySelector('.projects-grid');
+    grid.innerHTML='';
+    const projects=getProjects();
+    document.getElementById('statProjects').innerText=projects.length;
+    projects.forEach(p=>{
+        const card=document.createElement('div');
+        card.className='project-card';
+        card.innerHTML=`<h3>${p.title}</h3>
+        <p>${p.description}</p>
+        <div class="project-actions">
+        <button class="open-project" data-id="${p.id}">Ouvrir</button>
+        <button class="delete-project" data-id="${p.id}">Supprimer</button>
+        </div>`;
+        grid.appendChild(card);
+    });
+    attachProjectEvents();
 }
 
-// ----------------- Select Project -----------------
-function selectProject(id) {
-  projetActif = projets.find((p) => p.id == id);
-  if (!projetActif) return;
-  activeProjectContainer.style.display = "block";
-  activeTitle.textContent = projetActif.title;
-  activeDescription.value = projetActif.description || "";
+function attachProjectEvents(){
+    document.querySelectorAll('.open-project').forEach(btn=>btn.addEventListener('click',e=>openProject(e.target.dataset.id)));
+    document.querySelectorAll('.delete-project').forEach(btn=>btn.addEventListener('click',e=>deleteProject(e.target.dataset.id)));
 }
 
-// ----------------- Save Project -----------------
-document.getElementById("saveProject").addEventListener("click", async () => {
-  if (!projetActif) return;
-  const desc = activeDescription.value;
-  await fetch(`${apiBase}/project/${projetActif.id}`, {
-    method: "PUT",
-    headers: { "Content-Type": "application/json" },
-    credentials: "include",
-    body: JSON.stringify({ description: desc }),
-  });
-  loadProjects();
+function openProject(id){
+    const projects=getProjects();
+    const p=projects.find(x=>x.id===id);
+    if(!p) return;
+    const modal=document.querySelector('.active-project');
+    modal.querySelector('textarea').value=p.content||p.description;
+    modal.dataset.id=id;
+    modal.style.display='flex';
+}
+
+// Save project content
+document.getElementById('saveProject').addEventListener('click',()=>{
+    const modal=document.querySelector('.active-project');
+    const id=modal.dataset.id;
+    const content=modal.querySelector('textarea').value;
+    const projects=getProjects();
+    const idx=projects.findIndex(p=>p.id===id);
+    if(idx>=0){projects[idx].content=content;saveProjects(projects);renderProjects();}
+    alert('Projet enregistré !');
 });
 
-// ----------------- Delete Project -----------------
-async function deleteProject(id) {
-  if (!confirm("Voulez-vous vraiment supprimer ce projet ?")) return;
-  await fetch(`${apiBase}/project/${id}`, {
-    method: "DELETE",
-    credentials: "include",
-  });
-  loadProjects();
+// Delete project
+function deleteProject(id){
+    let projects=getProjects();
+    projects=projects.filter(p=>p.id!==id);
+    saveProjects(projects);
+    renderProjects();
 }
 
-// ----------------- New Project -----------------
-const newProjectBtn = document.getElementById("newProjectBtn");
-const newProjectForm = document.getElementById("newProjectForm");
-const cancelNewProject = document.getElementById("cancelNewProject");
-
-newProjectBtn.addEventListener(
-  "click",
-  () => (newProjectForm.style.display = "block")
-);
-cancelNewProject.addEventListener(
-  "click",
-  () => (newProjectForm.style.display = "none")
-);
-
-document.getElementById("projectForm").addEventListener("submit", async (e) => {
-  e.preventDefault();
-  const title = document.getElementById("title").value;
-  const description = document.getElementById("description").value;
-  const style = document.getElementById("style").value;
-  await fetch(`${apiBase}/project`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    credentials: "include",
-    body: JSON.stringify({ title, description, style }),
-  });
-  document.getElementById("projectForm").reset();
-  newProjectForm.style.display = "none";
-  loadProjects();
+// Nouveau projet
+const newProjectModal=document.querySelector('.new-project-form');
+document.getElementById('newProjectBtn').addEventListener('click',()=>{newProjectModal.style.display='flex';});
+document.getElementById('openNewProjectBtn').addEventListener('click',()=>{newProjectModal.style.display='flex';});
+document.getElementById('cancelNewProject').addEventListener('click',()=>{newProjectModal.style.display='none';});
+document.getElementById('projectForm').addEventListener('submit',e=>{
+    e.preventDefault();
+    const title=e.target.title.value.trim();
+    const desc=e.target.description.value.trim();
+    if(!title) return alert('Titre requis');
+    const projects=getProjects();
+    projects.push({id:generateId(), title, description:desc, content:'', createdAt:Date.now()});
+    saveProjects(projects);
+    renderProjects();
+    e.target.reset();
+    newProjectModal.style.display='none';
 });
 
-// ----------------- Stats -----------------
-function updateStats() {
-  document.getElementById("statProjects").textContent = projets.length;
-  const totalWords = projets.reduce((sum, p) => sum + (p.wordCount || 0), 0);
-  document.getElementById("statWords").textContent = totalWords;
-  const wordsToday = projets.reduce(
-    (sum, p) => sum + (p.wordCountToday || 0),
-    0
-  );
-  document.getElementById("dailyGoalMessage").textContent =
-    wordsToday >= DAILY_WORD_GOAL
-      ? `🎉 Objectif atteint ! (${wordsToday}/${DAILY_WORD_GOAL})`
-      : `✏️ Objectif : ${
-          DAILY_WORD_GOAL - wordsToday
-        } mots restants (${wordsToday}/${DAILY_WORD_GOAL})`;
-}
+// IA
+document.getElementById('aiProjectBtn').addEventListener('click',()=>{
+    const aiSection=document.getElementById('aiSection');
+    aiSection.style.display=aiSection.style.display==='none'?'block':'none';
+});
+document.getElementById('aiEnhance').addEventListener('click',()=>{
+    const aiInput=document.getElementById('aiInput');
+    const text=aiInput.value.trim();
+    if(!text) return alert('Entrez un texte');
+    const modal=document.querySelector('.active-project');
+    modal.querySelector('textarea').value=text.toUpperCase(); // placeholder IA
+    aiInput.value='';
+});
+document.querySelector('.close-project').addEventListener('click',()=>{document.querySelector('.active-project').style.display='none';});
 
-loadProjects();
+// PROFIL MODAL
+document.getElementById('openProfileBtn').addEventListener('click',()=>{document.getElementById('profileModal').style.display='flex';});
+document.getElementById('closeProfileModal').addEventListener('click',()=>{document.getElementById('profileModal').style.display='none';});
 
+// Déconnexion
+document.getElementById('btnLogout').addEventListener('click',()=>{
+    alert('Vous êtes déconnecté !');
+    window.location.href='login.html';
+});
+
+// Init
+document.addEventListener('DOMContentLoaded',()=>{renderProjects();});
