@@ -1,118 +1,144 @@
 <!DOCTYPE html>
 <html lang="fr">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard - MISTERKIMAPP</title>
-    <link rel="stylesheet" href="dashboard.css">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Dashboard - MISTERKIMAPP</title>
+  <link rel="stylesheet" href="dashboard.css" />
 </head>
-
 <body>
-
-    <!-- SIDEBAR -->
-    <aside class="sidebar">
-        <div class="profile">
-            <img id="profilePhotoPreview" src="images/bestoff2.png" alt="Photo profil">
-            <h3>Mohamed Kimouche</h3>
-            <p>Conducteur & Formateur</p>
-            <p id="sidebarGoal">🎯 Objectif quotidien : 500 mots</p>
-            <button class="btn-logout" id="btnLogout">Se déconnecter</button>
-        </div>
-        <nav class="sidebar-nav">
-            <a href="#" class="active">📘 Tableau de bord</a>
-            <a href="#" id="openNewProjectBtn">✏️ Nouveau Projet</a>
-            <a href="#" id="openProfileBtn">👤 Profil</a>
-            <a href="#">📚 Templates</a>
-            <a href="#">🎯 Objectifs</a>
-        </nav>
-    </aside>
-
-    <!-- MAIN -->
-    <main class="main">
-        <header class="main-header">
-            <div class="header-text">
-                <h1>Bonjour, Mohamed</h1>
-                <p>Prêt à transformer vos idées en chef-d'œuvre ?</p>
-                <p id="dailyGoalMessage">✏️ Objectif quotidien : 500 mots</p>
-            </div>
-            <div class="header-img">
-                <img src="./images/bestofapp.png" alt="Illustration header">
-            </div>
-        </header>
-
-        <section class="stats">
-            <div class="stat-card blue">
-                <h3>Projets en cours</h3>
-                <h2 id="statProjects">0</h2>
-            </div>
-            <div class="stat-card orange">
-                <h3>Mots écrits</h3>
-                <h2 id="statWords">0</h2>
-            </div>
-            <div class="stat-card green">
-                <h3>Objectif du jour</h3>
-                <h2 id="statGoal">500</h2>
-            </div>
-            <div class="stat-card purple">
-                <h3>Succès</h3>
-                <h2 id="statSuccess">0</h2>
-            </div>
-        </section>
-
-        <section class="projects">
-            <div class="projects-header">
-                <h2>Mes projets</h2>
-                <button id="newProjectBtn" class="btn primary">+ Nouveau projet</button>
-            </div>
-            <div class="projects-grid"></div>
-        </section>
-    </main>
-
-    <!-- NOUVEAU PROJET MODAL -->
-    <div class="new-project-form" style="display:none;">
-        <h2>Créer un projet</h2>
-        <form id="projectForm">
-            <input type="text" name="title" placeholder="Titre du projet" required>
-            <textarea name="description" placeholder="Commencez votre histoire..."></textarea>
-            <select name="style">
-                <option value="Fantasy">Fantasy</option>
-                <option value="Thriller">Thriller</option>
-                <option value="Science Fiction">Science Fiction</option>
-                <option value="Romance">Romance</option>
-            </select>
-            <button type="submit" class="btn primary">Créer le projet</button>
-            <button type="button" id="cancelNewProject" class="btn ghost">Annuler</button>
-        </form>
+  <!-- SIDEBAR -->
+  <aside class="sidebar" aria-label="Barre latérale">
+    <div class="profile">
+      <img id="profilePhotoPreview" src="images/bestoff2.png" alt="Photo profil Mohamed">
+      <h3>Mohamed Kimouche</h3>
+      <p>Conducteur & Formateur</p>
+      <p id="sidebarGoal">🎯 Objectif quotidien : 500 mots</p>
+      <button class="btn-logout" id="btnLogout" aria-label="Se déconnecter">Se déconnecter</button>
     </div>
 
-    <!-- PROJET ACTIF MODAL -->
-    <div class="active-project" style="display:none;">
-        <h2>Projet Actif</h2>
-        <textarea placeholder="Écrivez ici votre histoire..."></textarea>
-        <div class="active-actions">
-            <button class="btn primary" id="saveProject">Enregistrer</button>
-            <button class="btn" id="aiProjectBtn">Améliorer avec IA</button>
-            <button class="btn ghost close-project">Fermer</button>
-        </div>
-        <div id="aiSection" style="display:none; margin-top:12px;">
-            <textarea id="aiInput" placeholder="Texte à améliorer..."></textarea>
-            <button class="btn" id="aiEnhance">Améliorer</button>
-        </div>
-    </div>
+    <nav class="sidebar-nav" aria-label="Navigation principale">
+      <a href="#" class="active" data-nav="dashboard">📘 Tableau de bord</a>
+      <a href="#" id="openNewProjectBtn">✏️ Nouveau Projet</a>
+      <a href="#" id="openProfileBtn">👤 Profil</a>
+      <a href="#">📚 Templates</a>
+      <a href="#">🎯 Objectifs</a>
+    </nav>
+  </aside>
 
-    <!-- PROFIL MODAL -->
-    <div id="profileModal" style="display:none;">
-        <div class="profile-modal-content">
-            <img id="profileModalPhoto" src="images/moedetoulon.jpg" alt="Photo profil">
-            <h3>Mohamed Kimouche</h3>
-            <p>Conducteur & Formateur</p>
-            <p id="profileGoal">🎯 Objectif : Devenir expert IA</p>
-            <button id="closeProfileModal" class="btn ghost">Fermer</button>
-        </div>
-    </div>
+  <!-- MAIN -->
+  <main class="main" id="main" role="main">
+    <header class="main-header" role="banner" aria-label="En-tête">
+      <div class="header-text">
+        <h1>Bonjour, Mohamed</h1>
+        <p>Prêt à transformer vos idées en chef-d'œuvre ?</p>
+        <p id="dailyGoalMessage">✏️ Objectif quotidien : <strong id="goalValue">500</strong> mots</p>
+      </div>
+      <div class="header-img" aria-hidden="true">
+        <img src="./images/bestofapp.png" alt="Illustration" />
+      </div>
+    </header>
 
-    <script src="dashboard.js"></script>
+    <section class="stats" aria-label="Statistiques rapides">
+      <div class="stat-card blue">
+        <h3>Projets en cours</h3>
+        <h2 id="statProjects">0</h2>
+      </div>
+      <div class="stat-card orange">
+        <h3>Mots écrits</h3>
+        <h2 id="statWords">0</h2>
+      </div>
+      <div class="stat-card green">
+        <h3>Objectif du jour</h3>
+        <h2 id="statGoal">500</h2>
+      </div>
+      <div class="stat-card purple">
+        <h3>Succès</h3>
+        <h2 id="statSuccess">0</h2>
+      </div>
+    </section>
+
+    <section class="projects" aria-label="Mes projets">
+      <div class="projects-header">
+        <h2>Mes projets</h2>
+        <button id="newProjectBtn" class="btn primary">+ Nouveau projet</button>
+      </div>
+
+      <div class="projects-grid" aria-live="polite"></div>
+    </section>
+  </main>
+
+  <!-- NOUVEAU PROJET MODAL -->
+  <div class="modal-overlay" id="newProjectModal" aria-hidden="true" style="display:none;">
+    <div class="new-project-form" role="dialog" aria-modal="true" aria-labelledby="newProjectTitle">
+      <h2 id="newProjectTitle">Créer un projet</h2>
+      <form id="projectForm">
+        <label>
+          <span class="sr-only">Titre</span>
+          <input type="text" name="title" placeholder="Titre du projet" required />
+        </label>
+        <label>
+          <span class="sr-only">Description</span>
+          <textarea name="description" placeholder="Commencez votre histoire..."></textarea>
+        </label>
+        <label>
+          <span class="sr-only">Style</span>
+          <select name="style">
+            <option value="Fantasy">Fantasy</option>
+            <option value="Thriller">Thriller</option>
+            <option value="Science Fiction">Science Fiction</option>
+            <option value="Romance">Romance</option>
+          </select>
+        </label>
+
+        <div class="modal-actions">
+          <button type="submit" class="btn primary">Créer le projet</button>
+          <button type="button" id="cancelNewProject" class="btn ghost">Annuler</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- PROJET ACTIF MODAL -->
+  <div class="modal-overlay" id="activeProjectModal" aria-hidden="true" style="display:none;">
+    <div class="active-project" role="dialog" aria-modal="true" aria-labelledby="activeProjectTitle">
+      <h2 id="activeProjectTitle">Projet Actif</h2>
+      <p id="activeProjectStatus" class="project-badge brouillon" aria-live="polite">Brouillon</p>
+
+      <textarea id="activeProjectTextarea" placeholder="Écrivez ici votre histoire..." rows="8"></textarea>
+
+      <div class="project-indicators">
+        <span id="activeWords">0 mots</span>
+        <span id="activeDate">--/--/----</span>
+      </div>
+
+      <div class="active-actions">
+        <button class="btn primary" id="saveProject">Enregistrer</button>
+        <button class="btn" id="aiProjectBtn">Améliorer avec IA</button>
+        <button class="btn ghost close-project">Fermer</button>
+      </div>
+
+      <div id="aiSection" style="display:none; margin-top:12px;">
+        <textarea id="aiInput" placeholder="Texte à améliorer..." rows="4"></textarea>
+        <button class="btn" id="aiEnhance">Améliorer</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- PROFIL MODAL -->
+  <div class="modal-overlay" id="profileModal" aria-hidden="true" style="display:none;">
+    <div class="profile-modal-content" role="dialog" aria-modal="true">
+      <img id="profileModalPhoto" src="images/moedetoulon.jpg" alt="Photo profil">
+      <h3>Mohamed Kimouche</h3>
+      <p>Conducteur & Formateur</p>
+      <p id="profileGoal">🎯 Objectif : Devenir expert IA</p>
+      <button id="closeProfileModal" class="btn ghost">Fermer</button>
+    </div>
+  </div>
+
+  <!-- TOAST -->
+  <div id="toast" class="toast" aria-live="assertive" aria-atomic="true"></div>
+
+  <script src="dashboard.js"></script>
 </body>
-
 </html>
