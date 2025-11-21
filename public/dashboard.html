@@ -6,7 +6,9 @@
   <title>Dashboard - MISTERKIMAPP</title>
   <link rel="stylesheet" href="dashboard.css" />
 </head>
+
 <body>
+
   <!-- SIDEBAR -->
   <aside class="sidebar" aria-label="Barre latérale">
     <div class="profile">
@@ -14,10 +16,10 @@
       <h3>Mohamed Kimouche</h3>
       <p>Conducteur & Formateur</p>
       <p id="sidebarGoal">🎯 Objectif quotidien : 500 mots</p>
-      <button class="btn-logout" id="btnLogout" aria-label="Se déconnecter">Se déconnecter</button>
+      <button class="btn-logout" id="btnLogout">Se déconnecter</button>
     </div>
 
-    <nav class="sidebar-nav" aria-label="Navigation principale">
+    <nav class="sidebar-nav">
       <a href="#" class="active" data-nav="dashboard">📘 Tableau de bord</a>
       <a href="#" id="openNewProjectBtn">✏️ Nouveau Projet</a>
       <a href="#" id="openProfileBtn">👤 Profil</a>
@@ -27,19 +29,21 @@
   </aside>
 
   <!-- MAIN -->
-  <main class="main" id="main" role="main">
-    <header class="main-header" role="banner" aria-label="En-tête">
+  <main class="main" id="main">
+    <header class="main-header">
       <div class="header-text">
         <h1>Bonjour, Mohamed</h1>
         <p>Prêt à transformer vos idées en chef-d'œuvre ?</p>
         <p id="dailyGoalMessage">✏️ Objectif quotidien : <strong id="goalValue">500</strong> mots</p>
       </div>
-      <div class="header-img" aria-hidden="true">
+
+      <div class="header-img">
         <img src="./images/bestofapp.png" alt="Illustration" />
       </div>
     </header>
 
-    <section class="stats" aria-label="Statistiques rapides">
+    <!-- STATS -->
+    <section class="stats">
       <div class="stat-card blue">
         <h3>Projets en cours</h3>
         <h2 id="statProjects">0</h2>
@@ -58,31 +62,33 @@
       </div>
     </section>
 
-    <section class="projects" aria-label="Mes projets">
+    <!-- MES PROJETS -->
+    <section class="projects">
       <div class="projects-header">
         <h2>Mes projets</h2>
         <button id="newProjectBtn" class="btn primary">+ Nouveau projet</button>
       </div>
 
-      <div class="projects-grid" aria-live="polite"></div>
+      <div class="projects-grid"></div>
     </section>
+
   </main>
 
   <!-- NOUVEAU PROJET MODAL -->
-  <div class="modal-overlay" id="newProjectModal" aria-hidden="true" style="display:none;">
-    <div class="new-project-form" role="dialog" aria-modal="true" aria-labelledby="newProjectTitle">
-      <h2 id="newProjectTitle">Créer un projet</h2>
+  <div class="modal-overlay" id="newProjectModal" style="display:none;">
+    <div class="new-project-form" role="dialog">
+      <h2>Créer un projet</h2>
       <form id="projectForm">
+
         <label>
-          <span class="sr-only">Titre</span>
           <input type="text" name="title" placeholder="Titre du projet" required />
         </label>
+
         <label>
-          <span class="sr-only">Description</span>
           <textarea name="description" placeholder="Commencez votre histoire..."></textarea>
         </label>
+
         <label>
-          <span class="sr-only">Style</span>
           <select name="style">
             <option value="Fantasy">Fantasy</option>
             <option value="Thriller">Thriller</option>
@@ -99,46 +105,67 @@
     </div>
   </div>
 
-  <!-- PROJET ACTIF MODAL -->
-  <div class="modal-overlay" id="activeProjectModal" aria-hidden="true" style="display:none;">
-    <div class="active-project" role="dialog" aria-modal="true" aria-labelledby="activeProjectTitle">
-      <h2 id="activeProjectTitle">Projet Actif</h2>
-      <p id="activeProjectStatus" class="project-badge brouillon" aria-live="polite">Brouillon</p>
+  <!-- PROJET ACTIF (NOUVEL ÉDITEUR AVANCÉ) -->
+  <div class="active-project" id="activeProjectModal" style="display:none; max-height:90vh; overflow:auto;">
+      <h2>Projet Actif</h2>
 
-      <textarea id="activeProjectTextarea" placeholder="Écrivez ici votre histoire..." rows="8"></textarea>
-
-      <div class="project-indicators">
-        <span id="activeWords">0 mots</span>
-        <span id="activeDate">--/--/----</span>
-      </div>
+      <!-- TITRE -->
+      <input id="activeProjectTitle"
+             type="text"
+             style="padding:12px; font-size:1.2rem; font-weight:bold; border-radius:12px; border:1px solid #ccc;">
 
       <div class="active-actions">
-        <button class="btn primary" id="saveProject">Enregistrer</button>
-        <button class="btn" id="aiProjectBtn">Améliorer avec IA</button>
-        <button class="btn ghost close-project">Fermer</button>
+          <button class="btn primary" id="saveProject">💾 Enregistrer</button>
+          <button class="btn" id="deleteProjectBtn">🗑️ Supprimer</button>
+          <button class="btn ghost close-project">Fermer</button>
       </div>
 
-      <div id="aiSection" style="display:none; margin-top:12px;">
-        <textarea id="aiInput" placeholder="Texte à améliorer..." rows="4"></textarea>
-        <button class="btn" id="aiEnhance">Améliorer</button>
-      </div>
-    </div>
+      <hr>
+
+      <!-- ZONES DE TRAVAIL -->
+      <h3>1️⃣ Version originale</h3>
+      <textarea id="originalText" placeholder="Votre texte original..."></textarea>
+
+      <h3>2️⃣ Reformulé (IA)</h3>
+      <textarea id="reformulatedText" placeholder="[IA] Reformulation..."></textarea>
+      <button class="btn" id="btnReformulate">Reformuler</button>
+
+      <h3>3️⃣ Enrichi (IA)</h3>
+      <textarea id="enhancedText" placeholder="[IA] Version enrichie..."></textarea>
+      <button class="btn" id="btnEnhance">Enrichir</button>
+
+      <h3>4️⃣ Plan du texte</h3>
+      <textarea id="planText" placeholder="[IA] Plan automatique..."></textarea>
+      <button class="btn" id="btnGeneratePlan">Générer un plan</button>
+
+      <hr>
+
+      <h3>🎯 Affiner l’idée</h3>
+      <textarea id="ideaOutput" placeholder="[IA] Genre, intrigue, personnages..."></textarea>
+      <button class="btn" id="btnRefineIdea">Générer des idées</button>
+
+      <hr>
+
+      <h3>✍️ Assistant d’écriture</h3>
+      <textarea id="writingAssistantOutput" placeholder="[IA] Suggestions pour continuer votre histoire..."></textarea>
+      <button class="btn" id="btnWritingAssistant">Obtenir des suggestions</button>
   </div>
 
   <!-- PROFIL MODAL -->
-  <div class="modal-overlay" id="profileModal" aria-hidden="true" style="display:none;">
-    <div class="profile-modal-content" role="dialog" aria-modal="true">
+  <div class="modal-overlay" id="profileModal" style="display:none;">
+    <div class="profile-modal-content">
       <img id="profileModalPhoto" src="images/moedetoulon.jpg" alt="Photo profil">
       <h3>Mohamed Kimouche</h3>
       <p>Conducteur & Formateur</p>
-      <p id="profileGoal">🎯 Objectif : Devenir expert IA</p>
+      <p>🎯 Objectif : Devenir expert IA</p>
       <button id="closeProfileModal" class="btn ghost">Fermer</button>
     </div>
   </div>
 
   <!-- TOAST -->
-  <div id="toast" class="toast" aria-live="assertive" aria-atomic="true"></div>
+  <div id="toast" class="toast"></div>
 
   <script src="dashboard.js"></script>
+
 </body>
 </html>
