@@ -364,3 +364,28 @@ html, body {
   background: #aaa;
   color: #fff;
 }
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 25px 20px;
+  background: #fff;
+  position: fixed;
+  top: 0; left: 0; bottom: 0;
+  width: 260px;
+  overflow-y: auto;
+}
+
+.btn-logout {
+  margin-top: auto; /* pousse le bouton en bas */
+  padding: 8px 0;
+  width: 100%;
+  border: none;
+  border-radius: var(--radius);
+  background: var(--orange);
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.18s;
+}
+.btn-logout:hover { background:#d46000; }

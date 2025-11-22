@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
@@ -13,10 +14,11 @@
   <aside class="sidebar" aria-label="Barre latérale">
     <div class="profile">
       <img id="profilePhotoPreview" src="images/bestoff2.png" alt="Photo profil Mohamed">
-      <h3>Mohamed Kimouche</h3>
-      <p>Conducteur & Formateur</p>
-      <p id="sidebarGoal">🎯 Objectif quotidien : 500 mots</p>
-      <button class="btn-logout" id="btnLogout">Se déconnecter</button>
+      <h3>MISTERKIMAPP</h3>
+      <p>DE L'IDEE AU LIVRE</p>
+      <p id="sidebarGoal">🎯 ECRIVEZ AVEC L'IA 🎯 </p>
+
+
     </div>
 
     <nav class="sidebar-nav">
@@ -26,6 +28,44 @@
       <a href="#">📚 Templates</a>
       <a href="#">🎯 Objectifs</a>
     </nav>
+
+    <!-- MODULE 1 : OUTILS DE PROJET -->
+    <div class="sidebar-module">
+      <h4>🛠️ OUTILS DE PROJET</h4>
+      <div class="module-buttons">
+        <button>🎯 Objectifs</button>
+        <button>👤 Personnages</button>
+        <button>📍 Lieux</button>
+        <button>🕒 Chronologie</button>
+        <button>📝 Notes</button>
+        <button>💡 Idées</button>
+        <button>📊 Statistiques</button>
+      </div>
+    </div>
+
+    <!-- MODULE 2 : OUTILS CREATIFS -->
+    <div class="sidebar-module">
+      <h4>🎨 OUTILS CREATIFS</h4>
+      <div class="module-buttons">
+        <button>📝 Générateur de Noms</button>
+        <button>🎤 Dictée Vocale</button>
+        <button>🖼️ De Photos à Poème</button>
+        <button>📚 Bibliothèque</button>
+      </div>
+    </div>
+
+    <!-- MODULE 3 : OUTILS AVANCÉS -->
+    <div class="sidebar-module">
+      <h4>🚀 OUTILS AVANCÉS</h4>
+      <div class="module-buttons">
+        <button>⏱️ Écrivain de Pomodoro</button>
+        <button>🖋️ Analyse de Style</button>
+        <button>💬 Dialogues d’assistants</button>
+        <button>📄 Exporter PDF/EPUB</button>
+      </div>
+      <button class="btn-logout" id="btnLogout">Se déconnecter</button>
+    </div>
+
   </aside>
 
   <!-- MAIN -->
@@ -36,7 +76,6 @@
         <p>Prêt à transformer vos idées en chef-d'œuvre ?</p>
         <p id="dailyGoalMessage">✏️ Objectif quotidien : <strong id="goalValue">500</strong> mots</p>
       </div>
-
       <div class="header-img">
         <img src="./images/bestofapp.png" alt="Illustration" />
       </div>
@@ -68,10 +107,8 @@
         <h2>Mes projets</h2>
         <button id="newProjectBtn" class="btn primary">+ Nouveau projet</button>
       </div>
-
       <div class="projects-grid"></div>
     </section>
-
   </main>
 
   <!-- NOUVEAU PROJET MODAL -->
@@ -79,15 +116,8 @@
     <div class="new-project-form" role="dialog">
       <h2>Créer un projet</h2>
       <form id="projectForm">
-
-        <label>
-          <input type="text" name="title" placeholder="Titre du projet" required />
-        </label>
-
-        <label>
-          <textarea name="description" placeholder="Commencez votre histoire..."></textarea>
-        </label>
-
+        <label><input type="text" name="title" placeholder="Titre du projet" required /></label>
+        <label><textarea name="description" placeholder="Commencez votre histoire..."></textarea></label>
         <label>
           <select name="style">
             <option value="Fantasy">Fantasy</option>
@@ -96,7 +126,6 @@
             <option value="Romance">Romance</option>
           </select>
         </label>
-
         <div class="modal-actions">
           <button type="submit" class="btn primary">Créer le projet</button>
           <button type="button" id="cancelNewProject" class="btn ghost">Annuler</button>
@@ -105,50 +134,49 @@
     </div>
   </div>
 
-  <!-- PROJET ACTIF (NOUVEL ÉDITEUR AVANCÉ) -->
+  <!-- PROJET ACTIF -->
   <div class="active-project" id="activeProjectModal" style="display:none; max-height:90vh; overflow:auto;">
-      <h2>Projet Actif</h2>
+    <h2>Projet Actif</h2>
 
-      <!-- TITRE -->
-      <input id="activeProjectTitle"
-             type="text"
-             style="padding:12px; font-size:1.2rem; font-weight:bold; border-radius:12px; border:1px solid #ccc;">
+    <!-- TITRE -->
+    <input id="activeProjectTitle" type="text"
+      style="padding:12px; font-size:1.2rem; font-weight:bold; border-radius:12px; border:1px solid #ccc;">
 
-      <div class="active-actions">
-          <button class="btn primary" id="saveProject">💾 Enregistrer</button>
-          <button class="btn" id="deleteProjectBtn">🗑️ Supprimer</button>
-          <button class="btn ghost close-project">Fermer</button>
-      </div>
+    <div class="active-actions">
+      <button class="btn primary" id="saveProject">💾 Enregistrer</button>
+      <button class="btn" id="deleteProjectBtn">🗑️ Supprimer</button>
+      <button class="btn ghost close-project">Fermer</button>
+    </div>
 
-      <hr>
+    <hr>
 
-      <!-- ZONES DE TRAVAIL -->
-      <h3>1️⃣ Version originale</h3>
-      <textarea id="originalText" placeholder="Votre texte original..."></textarea>
+    <!-- ZONES DE TRAVAIL -->
+    <h3>1️⃣ Version originale</h3>
+    <textarea id="originalText" placeholder="Votre texte original..."></textarea>
 
-      <h3>2️⃣ Reformulé (IA)</h3>
-      <textarea id="reformulatedText" placeholder="[IA] Reformulation..."></textarea>
-      <button class="btn" id="btnReformulate">Reformuler</button>
+    <h3>2️⃣ Reformulé (IA)</h3>
+    <textarea id="reformulatedText" placeholder="[IA] Reformulation..."></textarea>
+    <button class="btn" id="btnReformulate">Reformuler</button>
 
-      <h3>3️⃣ Enrichi (IA)</h3>
-      <textarea id="enhancedText" placeholder="[IA] Version enrichie..."></textarea>
-      <button class="btn" id="btnEnhance">Enrichir</button>
+    <h3>3️⃣ Enrichi (IA)</h3>
+    <textarea id="enhancedText" placeholder="[IA] Version enrichie..."></textarea>
+    <button class="btn" id="btnEnhance">Enrichir</button>
 
-      <h3>4️⃣ Plan du texte</h3>
-      <textarea id="planText" placeholder="[IA] Plan automatique..."></textarea>
-      <button class="btn" id="btnGeneratePlan">Générer un plan</button>
+    <h3>4️⃣ Plan du texte</h3>
+    <textarea id="planText" placeholder="[IA] Plan automatique..."></textarea>
+    <button class="btn" id="btnGeneratePlan">Générer un plan</button>
 
-      <hr>
+    <hr>
 
-      <h3>🎯 Affiner l’idée</h3>
-      <textarea id="ideaOutput" placeholder="[IA] Genre, intrigue, personnages..."></textarea>
-      <button class="btn" id="btnRefineIdea">Générer des idées</button>
+    <h3>🎯 Affiner l’idée</h3>
+    <textarea id="ideaOutput" placeholder="[IA] Genre, intrigue, personnages..."></textarea>
+    <button class="btn" id="btnRefineIdea">Générer des idées</button>
 
-      <hr>
+    <hr>
 
-      <h3>✍️ Assistant d’écriture</h3>
-      <textarea id="writingAssistantOutput" placeholder="[IA] Suggestions pour continuer votre histoire..."></textarea>
-      <button class="btn" id="btnWritingAssistant">Obtenir des suggestions</button>
+    <h3>✍️ Assistant d’écriture</h3>
+    <textarea id="writingAssistantOutput" placeholder="[IA] Suggestions pour continuer votre histoire..."></textarea>
+    <button class="btn" id="btnWritingAssistant">Obtenir des suggestions</button>
   </div>
 
   <!-- PROFIL MODAL -->
@@ -166,6 +194,6 @@
   <div id="toast" class="toast"></div>
 
   <script src="dashboard.js"></script>
-
 </body>
+
 </html>

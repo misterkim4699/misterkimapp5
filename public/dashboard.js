@@ -1,10 +1,4 @@
-/* Dashboard.js - corrigé & cohérent avec ton HTML
-   - Un seul module IIFE
-   - Pas de duplications
-   - Références aux bons IDs
-   - Sauvegarde complète dans localStorage
-*/
-
+/* public/dashboard.js - Version complète & compatible avec fallback IA */
 (function () {
   // ---------- Helpers LocalStorage ----------
   function getProjects() {
@@ -137,12 +131,10 @@
 
   // ---------- Events on project cards ----------
   function attachProjectEvents() {
-    // open
     projectsGrid.querySelectorAll(".open-project").forEach((btn) => {
       btn.removeEventListener("click", openProjectHandler);
       btn.addEventListener("click", openProjectHandler);
     });
-    // delete
     projectsGrid.querySelectorAll(".delete-project").forEach((btn) => {
       btn.removeEventListener("click", deleteProjectHandler);
       btn.addEventListener("click", deleteProjectHandler);
@@ -161,18 +153,16 @@
     showToast("Projet supprimé");
   }
 
-  // ---------- Open project (fill editor fields) ----------
+  // ---------- Open project ----------
   function openProject(id) {
     const projects = getProjects();
     const p = projects.find((x) => x.id === id);
     if (!p) return showToast("Projet introuvable");
 
-    // set dataset on modal
     const modal = document.getElementById("activeProjectModal");
     modal.dataset.id = id;
     modal.style.display = "flex";
 
-    // fill fields (ids must exist in HTML)
     const titleEl = document.getElementById("activeProjectTitle");
     const originalEl = document.getElementById("originalText");
     const reformulatedEl = document.getElementById("reformulatedText");
@@ -189,11 +179,10 @@
     if (ideaEl) ideaEl.value = p.idea || "";
     if (writingEl) writingEl.value = p.assistant || "";
 
-    // focus original
     originalEl && originalEl.focus();
   }
 
-  // ---------- Save from active modal (all fields) ----------
+  // ---------- Save project from modal ----------
   function saveProjectFromModal() {
     const modal = document.getElementById("activeProjectModal");
     if (!modal || !modal.dataset.id) return showToast("Aucun projet ouvert");
@@ -226,7 +215,7 @@
     showToast("Projet enregistré");
   }
 
-  // ---------- Delete current project (button in modal) ----------
+  // ---------- Delete current project ----------
   function deleteCurrentProjectFromModal() {
     const modal = document.getElementById("activeProjectModal");
     if (!modal || !modal.dataset.id) return;
@@ -239,7 +228,7 @@
     showToast("Projet supprimé");
   }
 
-  // ---------- New project flow ----------
+  // ---------- New project ----------
   function openNewProjectModal() {
     if (!newProjectModal) return;
     newProjectModal.style.display = "flex";
@@ -281,44 +270,107 @@
     e.target.reset();
   }
 
-  // ---------- AI placeholders ----------
-  function applyAIReformulate() {
-    const original = document.getElementById("originalText")?.value || "";
-    if (!original) return showToast("Écrivez un texte d'abord");
-    // placeholder naive
-    document.getElementById("reformulatedText").value = original
-      .split(".")
-      .map((s) => s.trim())
-      .filter(Boolean)
-      .map((s) => s.charAt(0).toUpperCase() + s.slice(1))
-      .join(". ");
-    showToast("Reformulation simulée");
-  }
-  function applyAIEnhance() {
-    const original = document.getElementById("originalText")?.value || "";
-    if (!original) return showToast("Écrivez un texte d'abord");
-    document.getElementById("enhancedText").value =
-      original +
-      "\n\n[Ajouté : développement, descriptions et dialogues — simulation]";
-    showToast("Enrichissement simulé");
-  }
-  function generatePlan() {
-    document.getElementById("planText").value =
-      "1. Accroche\n2. Conflit\n3. Montée de tension\n4. Résolution";
-    showToast("Plan généré (simulation)");
-  }
-  function refineIdea() {
-    document.getElementById("ideaOutput").value =
-      "Genre : Thriller\nPoints d'intrigue : ...\nPersonnages : ...";
-    showToast("Idées générées (simulation)");
-  }
-  function writingAssistant() {
-    document.getElementById("writingAssistantOutput").value =
-      "- Suggestion 1\n- Suggestion 2\n- Prompt pour continuer...";
-    showToast("Suggestions générées (simulation)");
+  // ---------- Secure fetch AI ----------
+  async function callAI(endpoint, payload) {
+    try {
+      const response = await fetch(
+        endpoint.startsWith("/") ? endpoint : `/api/ai/${endpoint}`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        }
+      );
+
+      // Read text then try parse (garde ton diagnostic d'origine)
+      const text = await response.text();
+      let data;
+      try {
+        data = JSON.parse(text);
+      } catch (err) {
+        console.error("❌ Réponse invalide de l'API :", text);
+        showToast("Erreur serveur : réponse invalide");
+        return null;
+      }
+
+      if (!response.ok) {
+        console.error("❌ Erreur API :", data);
+        showToast(`Erreur API : ${data.error || response.statusText}`);
+        return null;
+      }
+
+      return data;
+    } catch (err) {
+      console.error("❌ Erreur réseau ou Fetch :", err);
+      showToast("Erreur réseau : impossible de contacter le serveur");
+      return null;
+    }
   }
 
-  // ---------- Overlay click & Escape ----------
+  // ---------- Handlers AI ----------
+  async function handleReformulate() {
+    const original = document.getElementById("originalText")?.value || "";
+    if (!original) return showToast("Écrivez un texte d'abord");
+    showToast("Reformulation en cours...");
+    const res = await callAI("reformulate", { text: original });
+    if (!res) return;
+    const out = document.getElementById("reformulatedText");
+    out.value =
+      res.reformulated ||
+      res.improved ||
+      res.enhanced ||
+      res.text ||
+      res.improved ||
+      "";
+    showToast("Texte reformulé");
+  }
+
+  async function handleEnhance() {
+    const original = document.getElementById("originalText")?.value || "";
+    if (!original) return showToast("Écrivez un texte d'abord");
+    showToast("Enrichissement en cours...");
+    const res = await callAI("enhance", { text: original });
+    if (!res) return;
+    const out = document.getElementById("enhancedText");
+    out.value = res.enhanced || res.improved || res.text || "";
+    showToast("Texte enrichi");
+  }
+
+  async function handlePlan() {
+    const original = document.getElementById("originalText")?.value || "";
+    if (!original) return showToast("Écrivez un texte d'abord");
+    showToast("Génération de plan...");
+    const res = await callAI("plan", { text: original });
+    if (!res) return;
+    const out = document.getElementById("planText");
+    out.value = res.plan || res.text || "";
+    showToast("Plan généré");
+  }
+
+  async function handleIdea() {
+    const genre = document.getElementById("genreInput")?.value || "Roman";
+    const summary = document.getElementById("originalText")?.value || "";
+    if (!summary) return showToast("Résumé requis pour générer des idées");
+    showToast("Génération d'idées...");
+    const res = await callAI("idea", { genre, summary });
+    if (!res) return;
+    const out = document.getElementById("ideaOutput");
+    out.value = res.ideas || res.text || "";
+    showToast("Idées générées");
+  }
+
+  async function handleWritingAssistant() {
+    const original = document.getElementById("originalText")?.value || "";
+    if (!original) return showToast("Écrivez un texte d'abord");
+    showToast("Assistant d'écriture en cours...");
+    const res = await callAI("writing-assistant", { text: original });
+    if (!res) return;
+    const out = document.getElementById("writingAssistantOutput");
+    out.value = res.suggestions || res.text || "";
+    showToast("Suggestions générées");
+  }
+
+  // ---------- Overlay & Escape ----------
   function attachOverlayClose() {
     document.querySelectorAll(".modal-overlay").forEach((overlay) => {
       overlay.addEventListener("click", (ev) => {
@@ -331,14 +383,12 @@
 
     document.addEventListener("keydown", (ev) => {
       if (ev.key === "Escape") {
-        // close any visible overlay
         document.querySelectorAll(".modal-overlay").forEach((o) => {
           if (o.style.display && o.style.display !== "none") {
             o.style.display = "none";
             o.setAttribute("aria-hidden", "true");
           }
         });
-        // close activeProjectModal if open (it's not a modal-overlay)
         const ap = document.getElementById("activeProjectModal");
         if (ap && ap.style.display && ap.style.display !== "none") {
           ap.style.display = "none";
@@ -357,7 +407,7 @@
     });
   }
 
-  // ---------- Seed sample projects if empty ----------
+  // ---------- Seed sample projects ----------
   function seedIfEmpty() {
     const projects = getProjects();
     if (projects.length === 0) {
@@ -402,32 +452,31 @@
     attachLogout();
     attachOverlayClose();
 
-    // wire UI buttons/forms (guard with optional chaining)
+    // UI buttons/forms
     newProjectBtn?.addEventListener("click", openNewProjectModal);
     openNewProjectBtn?.addEventListener("click", openNewProjectModal);
     cancelNewProjectBtn?.addEventListener("click", closeNewProjectModal);
     projectForm?.addEventListener("submit", submitNewProject);
 
-    // modal save / delete
     saveProjectBtn?.addEventListener("click", saveProjectFromModal);
     deleteProjectBtn?.addEventListener("click", deleteCurrentProjectFromModal);
 
-    // AI buttons (ids must exist in HTML if used)
+    // AI buttons
     document
       .getElementById("btnReformulate")
-      ?.addEventListener("click", applyAIReformulate);
+      ?.addEventListener("click", handleReformulate);
     document
       .getElementById("btnEnhance")
-      ?.addEventListener("click", applyAIEnhance);
+      ?.addEventListener("click", handleEnhance);
     document
       .getElementById("btnGeneratePlan")
-      ?.addEventListener("click", generatePlan);
+      ?.addEventListener("click", handlePlan);
     document
       .getElementById("btnRefineIdea")
-      ?.addEventListener("click", refineIdea);
+      ?.addEventListener("click", handleIdea);
     document
       .getElementById("btnWritingAssistant")
-      ?.addEventListener("click", writingAssistant);
+      ?.addEventListener("click", handleWritingAssistant);
 
     // profile modal open/close
     openProfileBtn?.addEventListener("click", () => {
@@ -445,14 +494,10 @@
       })
     );
 
-    // seed and render
     seedIfEmpty();
     renderProjects();
   }
 
-  // Start when DOM loaded
   document.addEventListener("DOMContentLoaded", init);
-
-  // expose openProject to global if needed by external code (optional)
   window.openProject = openProject;
 })();
