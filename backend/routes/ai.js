@@ -1,9 +1,13 @@
 // backend/routes/ai.js
 import express from "express";
-import dotenv from "dotenv";
-import OpenAI from "openai";
+import {
+  reformulateText,
+  enhanceText,
+  generatePlan,
+  generateIdeas,
+  writingAssistant,
+} from "../services/openaiService.js";
 
-dotenv.config();
 const router = express.Router();
 
 // Middleware d'authentification
@@ -14,55 +18,94 @@ const requireAuth = (req, res, next) => {
   next();
 };
 
-// Initialisation OpenAI (API v4 / 2024+)
-const client = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
+/* ---------------------------------------------------------
+   POST /api/ai/reformulate
+   Reformulation IA
+--------------------------------------------------------- */
+router.post("/reformulate", requireAuth, async (req, res) => {
+  try {
+    const { text } = req.body;
+    if (!text || text.trim() === "")
+      return res.status(400).json({ error: "Texte requis" });
+
+    const result = await reformulateText(text);
+    res.json({ text: result });
+  } catch (err) {
+    console.error("❌ Reformulate Error:", err);
+    res.status(500).json({ error: err.message });
+  }
 });
 
 /* ---------------------------------------------------------
-   POST /api/ai/generate
-   Génération de texte IA
+   POST /api/ai/enhance
+   Enrichissement IA
 --------------------------------------------------------- */
-router.post("/generate", requireAuth, async (req, res) => {
+router.post("/enhance", requireAuth, async (req, res) => {
   try {
-    const { prompt } = req.body;
+    const { text } = req.body;
+    if (!text || text.trim() === "")
+      return res.status(400).json({ error: "Texte requis" });
 
-    if (!prompt || prompt.trim().length === 0) {
-      return res.status(400).json({ error: "Le prompt est requis." });
-    }
-
-    // Utilisation du modèle moderne gpt-4o-mini (rapide, peu coûteux)
-    const response = await client.chat.completions.create({
-      model: "gpt-4o-mini",
-      messages: [
-        {
-          role: "user",
-          content: prompt,
-        },
-      ],
-      max_tokens: 300,
-      temperature: 0.7,
-    });
-
-    const output = response.choices[0].message?.content;
-
-    res.json({
-      text: output || "",
-    });
+    const result = await enhanceText(text);
+    res.json({ text: result });
   } catch (err) {
-    console.error("❌ Erreur IA:", err);
+    console.error("❌ Enhance Error:", err);
+    res.status(500).json({ error: err.message });
+  }
+});
 
-    // Erreur spécifique OpenAI
-    if (err.response) {
-      return res.status(err.response.status).json({
-        error: "Erreur API OpenAI",
-        details: err.response.data,
-      });
-    }
+/* ---------------------------------------------------------
+   POST /api/ai/plan
+   Génération de plan
+--------------------------------------------------------- */
+router.post("/plan", requireAuth, async (req, res) => {
+  try {
+    const { text } = req.body;
+    if (!text || text.trim() === "")
+      return res.status(400).json({ error: "Texte requis" });
 
-    res.status(500).json({ error: "Erreur interne IA" });
+    const result = await generatePlan(text);
+    res.json({ text: result });
+  } catch (err) {
+    console.error("❌ Plan Error:", err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+/* ---------------------------------------------------------
+   POST /api/ai/ideas
+   Génération d’idées
+--------------------------------------------------------- */
+router.post("/ideas", requireAuth, async (req, res) => {
+  try {
+    const { genre, summary } = req.body;
+    if (!genre || !summary)
+      return res.status(400).json({ error: "Genre et résumé requis" });
+
+    const result = await generateIdeas(genre, summary);
+    res.json({ text: result });
+  } catch (err) {
+    console.error("❌ Ideas Error:", err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+/* ---------------------------------------------------------
+   POST /api/ai/writing-assistant
+   Assistant d’écriture
+--------------------------------------------------------- */
+router.post("/writing-assistant", requireAuth, async (req, res) => {
+  try {
+    const { text } = req.body;
+    if (!text || text.trim() === "")
+      return res.status(400).json({ error: "Texte requis" });
+
+    const result = await writingAssistant(text);
+    res.json({ text: result });
+  } catch (err) {
+    console.error("❌ Writing Assistant Error:", err);
+    res.status(500).json({ error: err.message });
   }
 });
 
 export default router;
-
