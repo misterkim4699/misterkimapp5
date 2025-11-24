@@ -4,15 +4,12 @@ const apiBase =
     ? "http://localhost:5000/api"
     : "/api";
 
-/* -----------------------
-   Helpers UI
-------------------------*/
+/* ================== TOAST ================== */
 function showToast(text, type = "info", timeout = 3000) {
-  const containerId = "misterkim-toast-container";
-  let container = document.getElementById(containerId);
+  let container = document.getElementById("misterkim-toast-container");
   if (!container) {
     container = document.createElement("div");
-    container.id = containerId;
+    container.id = "misterkim-toast-container";
     Object.assign(container.style, {
       position: "fixed",
       top: "20px",
@@ -24,7 +21,6 @@ function showToast(text, type = "info", timeout = 3000) {
     });
     document.body.appendChild(container);
   }
-
   const el = document.createElement("div");
   el.textContent = text;
   el.className = `toast ${type}`;
@@ -46,7 +42,6 @@ function showToast(text, type = "info", timeout = 3000) {
     opacity: "1",
     transition: "opacity 300ms",
   });
-
   container.appendChild(el);
   setTimeout(() => {
     el.style.opacity = "0";
@@ -54,6 +49,7 @@ function showToast(text, type = "info", timeout = 3000) {
   }, timeout);
 }
 
+/* ================== ESCAPE HTML ================== */
 function escapeHtml(str = "") {
   return String(str)
     .replaceAll("&", "&amp;")
@@ -63,94 +59,71 @@ function escapeHtml(str = "") {
     .replaceAll("'", "&#039;");
 }
 
-/* -----------------------
-   LOGIN
-------------------------*/
+/* ================== LOGIN ================== */
 (function setupLogin() {
   const loginForm = document.getElementById("loginForm");
   if (!loginForm) return;
-
   const loginMsg = document.getElementById("login-msg");
-
   loginForm.addEventListener("submit", async (e) => {
     e.preventDefault();
     if (loginMsg) loginMsg.textContent = "";
-
-    const email = (loginForm.querySelector("#email") || {}).value?.trim() || "";
-    const password =
-      (loginForm.querySelector("#password") || {}).value?.trim() || "";
-
+    const email = (loginForm.querySelector("#email") || {}).value?.trim();
+    const password = (loginForm.querySelector("#password") || {}).value?.trim();
     if (!email || !password) {
-      if (loginMsg) {
-        loginMsg.textContent = "Email et mot de passe requis.";
-        loginMsg.style.color = "red";
-      }
+      if (loginMsg) loginMsg.textContent = "Email et mot de passe requis.";
       showToast("Email et mot de passe requis", "error");
       return;
     }
-
     try {
       const res = await fetch(`${apiBase}/auth/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ email, mot_de_passe: password }),
       });
       const data = await res.json();
-
       if (res.ok) {
-        if (loginMsg) {
+        localStorage.setItem("token", data.token);
+        localStorage.setItem("utilisateur", JSON.stringify(data.utilisateur));
+        if (loginMsg)
           loginMsg.textContent = "Connexion réussie — redirection...";
-          loginMsg.style.color = "green";
-        }
         showToast("Connexion réussie", "success");
-        setTimeout(() => (window.location.href = "dashboard.html"), 700);
+        setTimeout(() => (window.location.href = "profile.html"), 700);
       } else {
-        if (loginMsg) {
+        if (loginMsg)
           loginMsg.textContent = data?.error || "Erreur de connexion.";
-          loginMsg.style.color = "red";
-        }
         showToast(data?.error || "Erreur de connexion", "error");
       }
     } catch (err) {
-      console.error("Login error:", err);
-      if (loginMsg) {
+      console.error(err);
+      if (loginMsg)
         loginMsg.textContent = "Impossible de contacter le serveur.";
-        loginMsg.style.color = "red";
-      }
       showToast("Impossible de contacter le serveur", "error");
     }
   });
 })();
 
-/* -----------------------
-   REGISTER
-------------------------*/
+/* ================== REGISTER ================== */
 (function setupRegister() {
   const registerForm = document.getElementById("registerForm");
   if (!registerForm) return;
-
   const registerMsg = document.getElementById("register-msg");
-
   registerForm.addEventListener("submit", async (e) => {
     e.preventDefault();
     if (registerMsg) registerMsg.textContent = "";
-
-    const prenom =
-      (registerForm.querySelector("#prenom") || {}).value?.trim() || "";
-    const nom = (registerForm.querySelector("#nom") || {}).value?.trim() || "";
-    const email =
-      (registerForm.querySelector("#email") || {}).value?.trim() || "";
-    const username =
-      (registerForm.querySelector("#username") || {}).value?.trim() || "";
-    const password =
-      (registerForm.querySelector("#password") || {}).value?.trim() || "";
+    const prenom = (registerForm.querySelector("#prenom") || {}).value?.trim();
+    const nom = (registerForm.querySelector("#nom") || {}).value?.trim();
+    const email = (registerForm.querySelector("#email") || {}).value?.trim();
+    const username = (
+      registerForm.querySelector("#username") || {}
+    ).value?.trim();
+    const password = (
+      registerForm.querySelector("#password") || {}
+    ).value?.trim();
 
     if (!prenom || !nom || !email || !password) {
-      if (registerMsg) {
+      if (registerMsg)
         registerMsg.textContent = "Veuillez remplir tous les champs requis.";
-        registerMsg.style.color = "red";
-      }
       showToast("Veuillez remplir tous les champs requis", "error");
       return;
     }
@@ -160,104 +133,37 @@ function escapeHtml(str = "") {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
-        body: JSON.stringify({ prenom, nom, email, username, password }),
+        body: JSON.stringify({
+          prenom,
+          nom,
+          email,
+          username,
+          mot_de_passe: password,
+        }),
       });
       const data = await res.json();
-
       if (res.ok) {
-        if (registerMsg) {
+        if (registerMsg)
           registerMsg.textContent =
             "Inscription réussie. Vérifiez votre email.";
-          registerMsg.style.color = "green";
-        }
-        showToast(
-          "Inscription réussie, vérifiez votre email pour activer le compte",
-          "success"
-        );
+        showToast("Inscription réussie, vérifiez votre email", "success");
+        setTimeout(() => (window.location.href = "login.html"), 1200);
       } else {
-        if (registerMsg) {
+        if (registerMsg)
           registerMsg.textContent =
             data?.error || "Erreur lors de l'inscription.";
-          registerMsg.style.color = "red";
-        }
         showToast(data?.error || "Erreur lors de l'inscription", "error");
       }
     } catch (err) {
-      console.error("Register error:", err);
-      if (registerMsg) {
+      console.error(err);
+      if (registerMsg)
         registerMsg.textContent = "Impossible de contacter le serveur.";
-        registerMsg.style.color = "red";
-      }
       showToast("Impossible de contacter le serveur", "error");
     }
   });
 })();
 
-/* -----------------------
-   DASHBOARD / PROJECTS
-------------------------*/
-async function loadProjects() {
-  const container = document.getElementById("projects-container");
-  if (!container) return;
-
-  container.innerHTML = `<div class="card">Chargement des projets...</div>`;
-
-  try {
-    const res = await fetch(`${apiBase}/projects`, { credentials: "include" });
-    const data = await res.json();
-
-    if (!res.ok) {
-      container.innerHTML = `<div class="card">Erreur: ${
-        data?.error || "Impossible de charger"
-      }</div>`;
-      showToast(
-        data?.error || "Erreur lors du chargement des projets",
-        "error"
-      );
-      return;
-    }
-
-    const projects = Array.isArray(data.projects) ? data.projects : [];
-    if (projects.length === 0) {
-      container.innerHTML = `<div class="card">Aucun projet pour le moment. Créez-en un !</div>`;
-      return;
-    }
-
-    container.innerHTML = "";
-    projects.forEach((p) => {
-      const card = document.createElement("div");
-      card.className = "project-card";
-      card.innerHTML = `
-        <h3>${escapeHtml(p.title)}</h3>
-        <p>${escapeHtml(p.description || "")}</p>
-        <div class="project-actions">
-          <button class="btn-edit" data-id="${p.id}">✏️</button>
-          <button class="btn-delete" data-id="${p.id}">🗑️</button>
-        </div>
-      `;
-      container.appendChild(card);
-    });
-
-    container
-      .querySelectorAll(".btn-delete")
-      .forEach((btn) =>
-        btn.addEventListener("click", () => deleteProject(btn.dataset.id))
-      );
-    container
-      .querySelectorAll(".btn-edit")
-      .forEach((btn) =>
-        btn.addEventListener("click", () => editProjectPrompt(btn.dataset.id))
-      );
-  } catch (err) {
-    console.error("loadProjects error:", err);
-    container.innerHTML = `<div class="card">Erreur lors du chargement des projets.</div>`;
-    showToast("Erreur réseau lors du chargement des projets", "error");
-  }
-}
-
-/* -----------------------
-   LOGOUT
-------------------------*/
+/* ================== LOGOUT ================== */
 (function setupLogout() {
   const logoutBtn = document.getElementById("logout-btn");
   if (!logoutBtn) return;
@@ -267,34 +173,48 @@ async function loadProjects() {
     } catch (err) {
       console.warn("Logout failed:", err);
     } finally {
+      localStorage.removeItem("token");
+      localStorage.removeItem("utilisateur");
       window.location.href = "index.html";
     }
   });
 })();
 
-/* -----------------------
-   Auto init
-------------------------*/
-document.addEventListener("DOMContentLoaded", () => {
-  if (document.getElementById("projects-container")) loadProjects();
+/* ================== PROFILE ================== */
+(function loadProfile() {
+  const infoEl = document.getElementById("user-info");
+  if (!infoEl) return;
+  const utilisateur = localStorage.getItem("utilisateur");
+  if (!utilisateur) {
+    infoEl.textContent = "Aucun utilisateur connecté.";
+    return;
+  }
+  const user = JSON.parse(utilisateur);
+  infoEl.innerHTML = `
+    <strong>Nom :</strong> ${escapeHtml(user.nom)}<br>
+    <strong>Prénom :</strong> ${escapeHtml(user.prenom)}<br>
+    <strong>Email :</strong> ${escapeHtml(user.email)}<br>
+    <strong>Username :</strong> ${escapeHtml(user.username || "")}
+  `;
+})();
 
-  // Smooth scroll
+/* ================== INIT ================== */
+document.addEventListener("DOMContentLoaded", () => {
+  // Smooth scroll pour les ancres
   document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
     anchor.addEventListener("click", function (e) {
       e.preventDefault();
       const target = document.querySelector(this.getAttribute("href"));
-      if (target) {
+      if (target)
         window.scrollTo({ top: target.offsetTop - 70, behavior: "smooth" });
-      }
     });
   });
 
-  // Scroll effect navbar
+  // Navbar scroll effect
+  const nav = document.querySelector(".navbar");
   window.addEventListener("scroll", () => {
-    const nav = document.querySelector(".navbar");
-    if (nav) {
-      if (window.scrollY > 60) nav.classList.add("nav-scrolled");
-      else nav.classList.remove("nav-scrolled");
-    }
+    if (!nav) return;
+    if (window.scrollY > 60) nav.classList.add("nav-scrolled");
+    else nav.classList.remove("nav-scrolled");
   });
 });
