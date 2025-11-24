@@ -17,20 +17,18 @@
       <h3>MISTERKIMAPP</h3>
       <p>DE L'IDEE AU LIVRE</p>
       <p id="sidebarGoal">🎯 ECRIVEZ AVEC L'IA 🎯 </p>
-
-
     </div>
 
     <nav class="sidebar-nav">
       <a href="#" class="active" data-nav="dashboard">📘 Tableau de bord</a>
-      <a href="#" id="openNewProjectBtn">✏️ Nouveau Projet</a>
-      <a href="#" id="openProfileBtn">👤 Profil</a>
+      <!-- Nouveau projet dans la sidebar transformé en bouton pour fonctionner correctement -->
+      <button id="openNewProjectBtn" class="btn primary" style="width:100%; margin-top:8px;">✏️ Nouveau Projet</button>
       <a href="#">📚 Templates</a>
       <a href="#">🎯 Objectifs</a>
     </nav>
 
     <!-- MODULE 1 : OUTILS DE PROJET -->
-    <div class="sidebar-module">
+    <div class="sidebar-module module-projects">
       <h4>🛠️ OUTILS DE PROJET</h4>
       <div class="module-buttons">
         <button>🎯 Objectifs</button>
@@ -44,7 +42,7 @@
     </div>
 
     <!-- MODULE 2 : OUTILS CREATIFS -->
-    <div class="sidebar-module">
+    <div class="sidebar-module module-creative">
       <h4>🎨 OUTILS CREATIFS</h4>
       <div class="module-buttons">
         <button>📝 Générateur de Noms</button>
@@ -55,20 +53,27 @@
     </div>
 
     <!-- MODULE 3 : OUTILS AVANCÉS -->
-    <div class="sidebar-module">
+    <div class="sidebar-module module-advanced">
       <h4>🚀 OUTILS AVANCÉS</h4>
       <div class="module-buttons">
         <button>⏱️ Écrivain de Pomodoro</button>
         <button>🖋️ Analyse de Style</button>
         <button>💬 Dialogues d’assistants</button>
         <button>📄 Exporter PDF/EPUB</button>
-      </div>
-      <button class="btn-logout" id="btnLogout">Se déconnecter</button>
-    </div>
 
+        <!-- BOUTON PROFIL -->
+        <button id="openProfileBtn2" class="profile-btn blue-btn">
+          <img src="./images/moedetoulon.jpg" alt="Profil" class="profile-icon">
+          Mon Profil
+        </button>
+
+        <!-- BOUTON SE DÉCONNECTER -->
+        <button class="btn-logout" id="btnLogout">Se déconnecter</button>
+      </div>
+    </div>
   </aside>
 
-  <!-- MAIN -->
+  <!-- MAIN (header horizontal) -->
   <main class="main" id="main">
     <header class="main-header">
       <div class="header-text">
@@ -105,32 +110,90 @@
     <section class="projects">
       <div class="projects-header">
         <h2>Mes projets</h2>
-        <button id="newProjectBtn" class="btn primary">+ Nouveau projet</button>
+        <button id="newProjectBtn" class="btn primary"> NOUVEAU PROJET </button>
       </div>
       <div class="projects-grid"></div>
     </section>
   </main>
 
-  <!-- NOUVEAU PROJET MODAL -->
+  <!-- RIGHT SIDEBAR PROFIL -->
+  <aside id="rightProfileSidebar" class="right-sidebar" aria-hidden="true">
+    <div class="right-sidebar-header">
+      <h2>Mon Profil</h2>
+      <button id="closeRightSidebar" class="btn ghost">✖</button>
+    </div>
+
+    <div style="text-align:center; margin-bottom:12px;">
+      <img id="rightProfilePhoto" src="images/moedetoulon.jpg" alt="Photo profil"
+        style="width:120px;height:120px;border-radius:50%;object-fit:cover;border:3px solid var(--purple);margin-bottom:10px;">
+      <input type="file" id="rightProfilePhotoInput" accept="image/*" style="display:block;margin:0 auto;">
+    </div>
+
+    <label>Nom complet : <input type="text" id="rightProfileName"></label>
+    <label>Métier : <input type="text" id="rightProfileJob"></label>
+    <label>Bio : <textarea id="rightProfileBio"></textarea></label>
+    <label>Email : <input type="email" id="rightProfileEmail" readonly style="background:#f1f1f5;"></label>
+
+    <div style="margin-top:12px;">
+      <button id="rightSaveProfileBtn" class="btn primary">💾 Enregistrer</button>
+    </div>
+  </aside>
+
+  <!-- NOUVEAU PROJET MODAL (IMPORTANT : placé ici, en dehors de la sidebar) -->
   <div class="modal-overlay" id="newProjectModal" style="display:none;">
-    <div class="new-project-form" role="dialog">
-      <h2>Créer un projet</h2>
-      <form id="projectForm">
-        <label><input type="text" name="title" placeholder="Titre du projet" required /></label>
-        <label><textarea name="description" placeholder="Commencez votre histoire..."></textarea></label>
+    <form id="projectForm" class="new-project-form">
+      <h2>Nouveau Projet</h2>
+      <label>
+        Titre :
+        <input type="text" name="title" placeholder="Nom du projet" required>
+      </label>
+      <label>
+        Description :
+        <textarea name="description" placeholder="Description du projet"></textarea>
+      </label>
+      <div class="modal-actions">
+        <button type="submit" class="btn primary" id="saveProjectLocal">Créer</button>
+        <button type="button" class="btn ghost" id="cancelNewProject">Annuler</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- PROFIL MODAL -->
+  <div class="modal-overlay" id="profileModal" style="display:none;">
+    <div class="profile-modal-content">
+
+      <h2>Mon Profil</h2>
+
+      <div style="display:flex; flex-direction:column; align-items:center; gap:20px; margin-bottom:20px;">
+        <img id="profileModalPhoto" src="images/moedetoulon.jpg" alt="Photo profil"
+          style="width:150px;height:150px;border-radius:50%;object-fit:cover;border:4px solid var(--purple);">
+        <input type="file" id="profilePhotoInput" accept="image/*" style="display:block;">
+      </div>
+
+      <div style="display:flex; flex-direction:column; gap:20px; font-size:1.1rem;">
         <label>
-          <select name="style">
-            <option value="Fantasy">Fantasy</option>
-            <option value="Thriller">Thriller</option>
-            <option value="Science Fiction">Science Fiction</option>
-            <option value="Romance">Romance</option>
-          </select>
+          Nom complet :
+          <input type="text" id="profileName" placeholder="Nom complet">
         </label>
-        <div class="modal-actions">
-          <button type="submit" class="btn primary">Créer le projet</button>
-          <button type="button" id="cancelNewProject" class="btn ghost">Annuler</button>
-        </div>
-      </form>
+        <label>
+          Métier :
+          <input type="text" id="profileJob" placeholder="Votre métier">
+        </label>
+        <label>
+          Bio :
+          <textarea id="profileBio" placeholder="Courte description..."></textarea>
+        </label>
+        <label>
+          Email :
+          <input type="email" id="profileEmail" readonly style="background:#f1f1f5;">
+        </label>
+      </div>
+
+      <div class="modal-actions">
+        <button id="saveProfileBtn" class="btn primary">💾 Enregistrer</button>
+        <button id="closeProfileModal" class="btn ghost">Fermer</button>
+      </div>
+
     </div>
   </div>
 
@@ -138,7 +201,6 @@
   <div class="active-project" id="activeProjectModal" style="display:none; max-height:90vh; overflow:auto;">
     <h2>Projet Actif</h2>
 
-    <!-- TITRE -->
     <input id="activeProjectTitle" type="text"
       style="padding:12px; font-size:1.2rem; font-weight:bold; border-radius:12px; border:1px solid #ccc;">
 
@@ -150,7 +212,6 @@
 
     <hr>
 
-    <!-- ZONES DE TRAVAIL -->
     <h3>1️⃣ Version originale</h3>
     <textarea id="originalText" placeholder="Votre texte original..."></textarea>
 
@@ -177,17 +238,6 @@
     <h3>✍️ Assistant d’écriture</h3>
     <textarea id="writingAssistantOutput" placeholder="[IA] Suggestions pour continuer votre histoire..."></textarea>
     <button class="btn" id="btnWritingAssistant">Obtenir des suggestions</button>
-  </div>
-
-  <!-- PROFIL MODAL -->
-  <div class="modal-overlay" id="profileModal" style="display:none;">
-    <div class="profile-modal-content">
-      <img id="profileModalPhoto" src="images/moedetoulon.jpg" alt="Photo profil">
-      <h3>Mohamed Kimouche</h3>
-      <p>Conducteur & Formateur</p>
-      <p>🎯 Objectif : Devenir expert IA</p>
-      <button id="closeProfileModal" class="btn ghost">Fermer</button>
-    </div>
   </div>
 
   <!-- TOAST -->

@@ -1,4 +1,4 @@
-/* public/dashboard.js - Version complète & compatible avec fallback IA */
+/* public/dashboard.js - Version complète & profil sidebar corrigé */
 (function () {
   // ---------- Helpers LocalStorage ----------
   function getProjects() {
@@ -28,16 +28,14 @@
 
   // ---------- Cache éléments ----------
   let projectsGrid;
-  let newProjectModal, activeProjectModal, profileModal;
+  let newProjectModal, activeProjectModal;
   let projectForm, cancelNewProjectBtn, newProjectBtn, openNewProjectBtn;
-  let saveProjectBtn, deleteProjectBtn, openProfileBtn, closeProfileModal;
-  let btnLogout;
+  let saveProjectBtn, deleteProjectBtn, btnLogout;
 
   function cacheElements() {
     projectsGrid = document.querySelector(".projects-grid");
     newProjectModal = document.getElementById("newProjectModal");
     activeProjectModal = document.getElementById("activeProjectModal");
-    profileModal = document.getElementById("profileModal");
 
     projectForm = document.getElementById("projectForm");
     cancelNewProjectBtn = document.getElementById("cancelNewProject");
@@ -46,8 +44,6 @@
 
     saveProjectBtn = document.getElementById("saveProject");
     deleteProjectBtn = document.getElementById("deleteProjectBtn");
-    openProfileBtn = document.getElementById("openProfileBtn");
-    closeProfileModal = document.getElementById("closeProfileModal");
 
     btnLogout = document.getElementById("btnLogout");
   }
@@ -282,7 +278,6 @@
         }
       );
 
-      // Read text then try parse (garde ton diagnostic d'origine)
       const text = await response.text();
       let data;
       try {
@@ -315,16 +310,9 @@
     const res = await callAI("reformulate", { text: original });
     if (!res) return;
     const out = document.getElementById("reformulatedText");
-    out.value =
-      res.reformulated ||
-      res.improved ||
-      res.enhanced ||
-      res.text ||
-      res.improved ||
-      "";
+    out.value = res.reformulated || res.improved || res.text || "";
     showToast("Texte reformulé");
   }
-
   async function handleEnhance() {
     const original = document.getElementById("originalText")?.value || "";
     if (!original) return showToast("Écrivez un texte d'abord");
@@ -335,7 +323,6 @@
     out.value = res.enhanced || res.improved || res.text || "";
     showToast("Texte enrichi");
   }
-
   async function handlePlan() {
     const original = document.getElementById("originalText")?.value || "";
     if (!original) return showToast("Écrivez un texte d'abord");
@@ -346,19 +333,16 @@
     out.value = res.plan || res.text || "";
     showToast("Plan généré");
   }
-
   async function handleIdea() {
-    const genre = document.getElementById("genreInput")?.value || "Roman";
     const summary = document.getElementById("originalText")?.value || "";
     if (!summary) return showToast("Résumé requis pour générer des idées");
     showToast("Génération d'idées...");
-    const res = await callAI("idea", { genre, summary });
+    const res = await callAI("idea", { summary });
     if (!res) return;
     const out = document.getElementById("ideaOutput");
     out.value = res.ideas || res.text || "";
     showToast("Idées générées");
   }
-
   async function handleWritingAssistant() {
     const original = document.getElementById("originalText")?.value || "";
     if (!original) return showToast("Écrivez un texte d'abord");
@@ -392,6 +376,10 @@
         const ap = document.getElementById("activeProjectModal");
         if (ap && ap.style.display && ap.style.display !== "none") {
           ap.style.display = "none";
+        }
+        const sidebar = document.getElementById("rightProfileSidebar");
+        if (sidebar && sidebar.style.display !== "none") {
+          sidebar.style.display = "none";
         }
       }
     });
@@ -451,6 +439,66 @@
     cacheElements();
     attachLogout();
     attachOverlayClose();
+    newProjectBtn?.addEventListener("click", openNewProjectModal);
+    openNewProjectBtn?.addEventListener("click", openNewProjectModal);
+
+    // ---------- Right Sidebar Profil ----------
+    const rightSidebar = document.getElementById("rightProfileSidebar");
+    const rightCloseBtn = document.getElementById("closeRightSidebar");
+    const rightOpenBtn = document.getElementById("openProfileBtn2");
+
+    const rightProfilePhoto = document.getElementById("rightProfilePhoto");
+    const rightProfilePhotoInput = document.getElementById(
+      "rightProfilePhotoInput"
+    );
+    const rightProfileName = document.getElementById("rightProfileName");
+    const rightProfileJob = document.getElementById("rightProfileJob");
+    const rightProfileBio = document.getElementById("rightProfileBio");
+    const rightProfileEmail = document.getElementById("rightProfileEmail");
+    const rightSaveProfileBtn = document.getElementById("rightSaveProfileBtn");
+
+    function loadRightProfile() {
+      const user = JSON.parse(localStorage.getItem("userProfile") || "{}");
+      rightProfileName.value = user.name || "Mohamed Kimouche";
+      rightProfileJob.value = user.job || "Conducteur & Formateur";
+      rightProfileBio.value = user.bio || "🎯 Objectif : Devenir expert IA";
+      rightProfileEmail.value = user.email || "mkimouche@example.com";
+      rightProfilePhoto.src = user.avatar || "./images/moedetoulon.jpg";
+    }
+
+    rightOpenBtn.addEventListener("click", () => {
+      loadRightProfile();
+      rightSidebar.style.display = "flex";
+      setTimeout(() => rightSidebar.classList.add("open"), 10);
+    });
+    rightCloseBtn.addEventListener("click", () => {
+      rightSidebar.classList.remove("open");
+      setTimeout(() => {
+        rightSidebar.style.display = "none";
+      }, 300);
+    });
+
+    rightProfilePhotoInput.addEventListener("change", () => {
+      const file = rightProfilePhotoInput.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        rightProfilePhoto.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    });
+
+    rightSaveProfileBtn.addEventListener("click", () => {
+      const user = {
+        name: rightProfileName.value,
+        job: rightProfileJob.value,
+        bio: rightProfileBio.value,
+        email: rightProfileEmail.value,
+        avatar: rightProfilePhoto.src,
+      };
+      localStorage.setItem("userProfile", JSON.stringify(user));
+      showToast("Profil enregistré ✅");
+    });
 
     // UI buttons/forms
     newProjectBtn?.addEventListener("click", openNewProjectModal);
@@ -478,15 +526,7 @@
       .getElementById("btnWritingAssistant")
       ?.addEventListener("click", handleWritingAssistant);
 
-    // profile modal open/close
-    openProfileBtn?.addEventListener("click", () => {
-      profileModal && (profileModal.style.display = "flex");
-    });
-    closeProfileModal?.addEventListener("click", () => {
-      profileModal && (profileModal.style.display = "none");
-    });
-
-    // close button inside active project modal
+    // Close active project modal buttons
     document.querySelectorAll(".close-project").forEach((btn) =>
       btn.addEventListener("click", () => {
         const ap = document.getElementById("activeProjectModal");
@@ -501,3 +541,37 @@
   document.addEventListener("DOMContentLoaded", init);
   window.openProject = openProject;
 })();
+rightOpenBtn.addEventListener("click", () => {
+  rightSidebar.style.display = "flex";
+  setTimeout(() => rightSidebar.classList.add("open"), 10);
+  document.querySelector(".main").classList.add("sidebar-right-open");
+});
+
+rightCloseBtn.addEventListener("click", () => {
+  rightSidebar.classList.remove("open");
+  setTimeout(() => {
+    rightSidebar.style.display = "none";
+    document.querySelector(".main").classList.remove("sidebar-right-open");
+  }, 300);
+});
+// PROFIL MODAL
+const profileModal = document.getElementById("profileModal");
+const openProfileBtn = document.getElementById("openProfileBtn2"); // bouton dans la sidebar
+const closeProfileModalBtn = document.getElementById("closeProfileModal");
+
+// ouvrir le modal
+openProfileBtn.addEventListener("click", () => {
+  profileModal.style.display = "flex";
+});
+
+// fermer le modal
+closeProfileModalBtn.addEventListener("click", () => {
+  profileModal.style.display = "none";
+});
+
+// fermer le modal si clic en dehors du contenu
+profileModal.addEventListener("click", (e) => {
+  if (e.target === profileModal) {
+    profileModal.style.display = "none";
+  }
+});
