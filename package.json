@@ -1,0 +1,26 @@
+{
+  "name": "misterkimapp5",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "dependencies": { },
+  "devDependencies": {
+    "nodemon": "^3.1.11"
+  },
+  "scripts": {
+    "dev": "cd backend && nodemon server.js",
+    "start": "cd backend && node server.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/misterkim4699/misterkimapp5.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/misterkim4699/misterkimapp5/issues"
+  },
+  "homepage": "https://github.com/misterkim4699/misterkimapp5#readme"
+}
