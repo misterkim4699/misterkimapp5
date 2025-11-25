@@ -6,6 +6,14 @@ import rateLimit from "express-rate-limit";
 
 const router = express.Router();
 
+router.get("/login", (req, res) => {
+  res.sendFile(path.join(__dirname, "../../public/login.html"));
+});
+
+router.get("/register", (req, res) => {
+  res.sendFile(path.join(__dirname, "../../public/register.html"));
+});
+
 // Limitation des tentatives de connexion
 const loginLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
